@@ -1,10 +1,11 @@
 const bookIssueService = require('../services/bookIssue.service')();
+const calculateRentService = require('../services/calculateRent.service')();
 
 const BookIssueController = () => {
   const issue = async (req, res, next) => {
     try {
       const { bid, cid, due } = req.body;
-      const rent = due * 1;
+      const rent = await calculateRentService.cal(bid, due);
       const bookIssued = await bookIssueService.issueBook(bid, cid, rent, due);
       res.json(bookIssued);
     } catch (err) {

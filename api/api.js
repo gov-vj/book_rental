@@ -6,6 +6,7 @@ const express = require('express');
 const http = require('http');
 const mapRoutes = require('express-routes-mapper');
 const { ValidationError } = require('sequelize');
+const ClientError = require('./lib/error/clientError');
 
 /**
  * server configuration
@@ -37,6 +38,11 @@ app.use((err, req, res, next) => {
   console.error(err);
   if (err instanceof ValidationError) {
     res.status(400).json(err.errors[0].message);
+    return;
+  }
+
+  if (err instanceof ClientError) {
+    res.status(400).json(err.message);
     return;
   }
 

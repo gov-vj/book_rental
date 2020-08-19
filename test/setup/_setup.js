@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const mapRoutes = require('express-routes-mapper');
 const { ValidationError } = require('sequelize');
+const ClientError = require('../../api/lib/error/clientError');
 
 const config = require('../../config/index');
 const database = require('../../config/database');
@@ -18,6 +19,11 @@ const beforeAction = async () => {
   testapp.use((err, req, res, next) => {
     if (err instanceof ValidationError) {
       res.status(400).json(err.errors[0].message);
+      return;
+    }
+
+    if (err instanceof ClientError) {
+      res.status(400).json(err.message);
       return;
     }
 
