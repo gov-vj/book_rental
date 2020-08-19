@@ -45,7 +45,7 @@ afterEach(async () => {
   await cust.destroy();
 });
 
-test('BookIssue | create | regular', async () => {
+test('BookIssue | create | regular - due greater than 2', async () => {
   const res = await request(api)
     .post('/api/issue/calCharges')
     .set('Accept', /json/)
@@ -61,13 +61,75 @@ test('BookIssue | create | regular', async () => {
   const dsaIssued = await Issued.findByPk(res.body.id);
 
   expect(dsaIssued.due_for).toEqual(12);
-  expect(dsaIssued.rent).toEqual(18);
+  expect(dsaIssued.rent).toEqual(17);
   expect(dsaIssued.advanced).toEqual(0.0);
   expect(dsaIssued.isReturned).toEqual(false);
   expect(dsaIssued.BookId).toEqual(book.id);
   expect(dsaIssued.CustomerId).toEqual(cust.id);
   expect(res.body.due_for).toEqual(12);
-  expect(res.body.rent).toEqual(18);
+  expect(res.body.rent).toEqual(17);
+  expect(res.body.advanced).toEqual(0.0);
+  expect(res.body.isReturned).toEqual(false);
+  expect(res.body.BookId).toEqual(book.id);
+  expect(res.body.CustomerId).toEqual(cust.id);
+
+  await dsaIssued.destroy();
+});
+
+test('BookIssue | create | regular - due 1', async () => {
+  const res = await request(api)
+    .post('/api/issue/calCharges')
+    .set('Accept', /json/)
+    .send({
+      bid: book.id,
+      cid: cust.id,
+      due: 1,
+    })
+    .expect(200);
+
+  expect(res.body.id).toBeTruthy();
+
+  const dsaIssued = await Issued.findByPk(res.body.id);
+
+  expect(dsaIssued.due_for).toEqual(1);
+  expect(dsaIssued.rent).toEqual(2);
+  expect(dsaIssued.advanced).toEqual(0.0);
+  expect(dsaIssued.isReturned).toEqual(false);
+  expect(dsaIssued.BookId).toEqual(book.id);
+  expect(dsaIssued.CustomerId).toEqual(cust.id);
+  expect(res.body.due_for).toEqual(1);
+  expect(res.body.rent).toEqual(2);
+  expect(res.body.advanced).toEqual(0.0);
+  expect(res.body.isReturned).toEqual(false);
+  expect(res.body.BookId).toEqual(book.id);
+  expect(res.body.CustomerId).toEqual(cust.id);
+
+  await dsaIssued.destroy();
+});
+
+test('BookIssue | create | regular - due 2', async () => {
+  const res = await request(api)
+    .post('/api/issue/calCharges')
+    .set('Accept', /json/)
+    .send({
+      bid: book.id,
+      cid: cust.id,
+      due: 2,
+    })
+    .expect(200);
+
+  expect(res.body.id).toBeTruthy();
+
+  const dsaIssued = await Issued.findByPk(res.body.id);
+
+  expect(dsaIssued.due_for).toEqual(2);
+  expect(dsaIssued.rent).toEqual(2);
+  expect(dsaIssued.advanced).toEqual(0.0);
+  expect(dsaIssued.isReturned).toEqual(false);
+  expect(dsaIssued.BookId).toEqual(book.id);
+  expect(dsaIssued.CustomerId).toEqual(cust.id);
+  expect(res.body.due_for).toEqual(2);
+  expect(res.body.rent).toEqual(2);
   expect(res.body.advanced).toEqual(0.0);
   expect(res.body.isReturned).toEqual(false);
   expect(res.body.BookId).toEqual(book.id);
@@ -114,7 +176,7 @@ test('BookIssue | create | fiction', async () => {
   await fiction.destroy();
 });
 
-test('BookIssue | create | novel', async () => {
+test('BookIssue | create | novel - due greater than 3', async () => {
   const novel = await Book.create({
     title: 'DSA',
     price: 5,
@@ -143,6 +205,44 @@ test('BookIssue | create | novel', async () => {
   expect(novelDb.CustomerId).toEqual(cust.id);
   expect(res.body.due_for).toEqual(12);
   expect(res.body.rent).toEqual(18);
+  expect(res.body.advanced).toEqual(0.0);
+  expect(res.body.isReturned).toEqual(false);
+  expect(res.body.BookId).toEqual(novel.id);
+  expect(res.body.CustomerId).toEqual(cust.id);
+
+  await novelDb.destroy();
+  await novel.destroy();
+});
+
+test('BookIssue | create | novel - due 2', async () => {
+  const novel = await Book.create({
+    title: 'DSA',
+    price: 5,
+    genre: 'novel',
+  });
+
+  const res = await request(api)
+    .post('/api/issue/calCharges')
+    .set('Accept', /json/)
+    .send({
+      bid: novel.id,
+      cid: cust.id,
+      due: 2,
+    })
+    .expect(200);
+
+  expect(res.body.id).toBeTruthy();
+
+  const novelDb = await Issued.findByPk(res.body.id);
+
+  expect(novelDb.due_for).toEqual(2);
+  expect(novelDb.rent).toEqual(4.5);
+  expect(novelDb.advanced).toEqual(0.0);
+  expect(novelDb.isReturned).toEqual(false);
+  expect(novelDb.BookId).toEqual(novel.id);
+  expect(novelDb.CustomerId).toEqual(cust.id);
+  expect(res.body.due_for).toEqual(2);
+  expect(res.body.rent).toEqual(4.5);
   expect(res.body.advanced).toEqual(0.0);
   expect(res.body.isReturned).toEqual(false);
   expect(res.body.BookId).toEqual(novel.id);

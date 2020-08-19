@@ -4,7 +4,11 @@ const rate = 1.5;
 
 class Regular extends Rent {
   cal() {
-    return rate * this.dueFor;
+    if (this.dueFor <= 2) {
+      return 2;
+    }
+
+    return 2 + (rate * (this.dueFor - 2));
   }
 }
 
